@@ -587,8 +587,12 @@ export function toggleMark(markType: MarkType, attrs: Attrs | null = null, optio
   /// already and part doesn't, the mark is removed (`true`, the
   /// default) or added (`false`).
   removeWhenPresent: boolean
+  /// Controls whether to skip whitespaces at the start and end of the
+  /// selection when adding a mark (`true`, the default).
+  trimWhitespaces: boolean
 }): Command {
   let removeWhenPresent = (options && options.removeWhenPresent) !== false
+  let trimWhitespaces = (options && options.trimWhitespaces) !== false
   return function(state, dispatch) {
     let {empty, $cursor, ranges} = state.selection as TextSelection
     if ((empty && !$cursor) || !markApplies(state.doc, ranges, markType)) return false
@@ -622,7 +626,7 @@ export function toggleMark(markType: MarkType, attrs: Attrs | null = null, optio
             let from = $from.pos, to = $to.pos, start = $from.nodeAfter, end = $to.nodeBefore
             let spaceStart = start && start.isText ? /^\s*/.exec(start.text!)![0].length : 0
             let spaceEnd = end && end.isText ? /\s*$/.exec(end.text!)![0].length : 0
-            if (from + spaceStart < to) { from += spaceStart; to -= spaceEnd }
+            if (trimWhitespaces && from + spaceStart < to) { from += spaceStart; to -= spaceEnd }
             tr.addMark(from, to, markType.create(attrs))
           }
         }

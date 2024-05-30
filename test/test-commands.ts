@@ -538,6 +538,7 @@ describe("autoJoin", () => {
 describe("toggleMark", () => {
   let toggleEm = toggleMark(schema.marks.em), toggleStrong = toggleMark(schema.marks.strong)
   let toggleEm2 = toggleMark(schema.marks.em, null, {removeWhenPresent: false})
+  let toggleEm3 = toggleMark(schema.marks.em, null, {trimWhitespaces: false})
 
   it("can add a mark", () => {
     apply(doc(p("one <a>two<b>")), toggleEm,
@@ -567,6 +568,11 @@ describe("toggleMark", () => {
   it("skips whitespace at selection ends when adding marks", () => {
     apply(doc(p("one<a> two  <b>three")), toggleEm,
           doc(p("one ", em("two"), "  three")))
+  })
+
+  it("leaves whitespaces when trim-whitespaces is off", () => {
+    apply(doc(p("one<a> two  <b>three")), toggleEm3,
+          doc(p("one", em(" two  "), "three")))
   })
 
   it("doesn't skip whitespace-only selections", () => {
